@@ -1,21 +1,13 @@
-import { SafeAreaView, StyleSheet } from 'react-native';
-
-
-import Presentacion from './Components/Presentacion';
+import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Presentacion from './components/Presentacion';
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Presentacion />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <View>
+        <Presentacion />
+      </View>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1', 
-    padding: 8,
-  },
-});
