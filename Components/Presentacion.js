@@ -1,81 +1,174 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-
-import * as Linking from 'expo-linking';
+import { Text, View, StyleSheet, Image, Pressable, ScrollView, Linking, Animated } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState, useRef } from 'react';
 
 export default function Presentacion() {
-  
+  const [pressed, setPressed] = useState(false);
+  const [longPressActivo, setLongPressActivo] = useState(false);
+  const escala = useRef(new Animated.Value(1)).current;
 
   const abrirEnlace = () => {
-    Linking.openURL('https://www.instagram.com/isaacfornerosaatt/'); 
+    Linking.openURL('https://www.instagram.com/isaacfornerosaatt/');
+  };
+
+  const abrirGithub = () => {
+    Linking.openURL('https://github.com/isaac-2008');
+  };
+
+  const handlePressIn = () => {
+    setPressed(true);
+    setLongPressActivo(false);
+    Animated.spring(escala, {
+      toValue: 0.93,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    setPressed(false);
+    Animated.spring(escala, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleLongPress = () => {
+    setLongPressActivo(true);
   };
 
   return (
-    <View style={styles.card}>
-      <Image 
-        source={{ uri: 'https://tn.com.ar/resizer/v2/franco-colapinto-gano-en-la-sprint-de-imola-en-la-f2-foto-x-formula2-OHA4LLKKGBCYLLOD6JRVV24MEY.jpg?auth=a8d308dbeb4863c5fa66a7847d60ec5ae3e2d1e75f7ae5800531479175f0b826&width=767' }} 
-        style={styles.foto} 
-      />
-      
-      <Text style={styles.nombre}>Hola, soy Isaac Fornero Saatt</Text>
-      <Text style={styles.info}>Edad: 17 años</Text>
-      <Text style={styles.descripcion}>
-        Estudiante de Las Varillas que estudia en la Escuela experimental PRoA y piloto de automovilismo.
-      </Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.card}>
 
-      <TouchableOpacity style={styles.boton} onPress={abrirEnlace}>
-        <Text style={styles.textoBoton}> Instagram</Text>
-      </TouchableOpacity>
+          <Image
+            source={{ uri: 'https://www.argentina.gob.ar/sites/default/files/20240518_121045.jpg' }}
+            style={styles.foto}
+          />
 
-      
+          <Text style={styles.nombre}>Hola, soy Isaac Fornero Saatt</Text>
+          <Text style={styles.info}>Edad: 17 años</Text>
 
-    </View>
+          <Text style={styles.descripcion}>
+            Estudiante de Las Varillas que estudia en la Escuela Experimental PRoA y piloto de automovilismo y fan de Max Vertappen y Franco Colapinto.
+          </Text>
+
+          {longPressActivo && (
+            <Text style={styles.mensajeLongPress}>
+              ¡Mantuviste presionado! Toca brevemente para abrir el enlace.
+            </Text>
+          )}
+
+          <Animated.View style={{ transform: [{ scale: escala }] }}>
+            <Pressable
+              style={({ pressed }) => [styles.boton, pressed && styles.botonPresionado]}
+              onPress={abrirEnlace}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              onLongPress={handleLongPress}
+              hitSlop={{ top: 12, bottom: 12, left: 20, right: 20 }}
+            >
+              {({ pressed }) => (
+                <Text style={styles.textoBoton}>
+                  {pressed ? 'Abriendo...' : 'Instagram'}
+                </Text>
+              )}
+            </Pressable>
+          </Animated.View>
+
+          <Animated.View style={{ transform: [{ scale: escala }] }}>
+            <Pressable
+              style={({ pressed }) => [styles.botonGithub, pressed && styles.botonGithubPresionado]}
+              onPress={abrirGithub}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              onLongPress={handleLongPress}
+              hitSlop={{ top: 12, bottom: 12, left: 20, right: 20 }}
+            >
+              {({ pressed }) => (
+                <Text style={styles.textoBoton}>
+                  {pressed ? 'Abriendo...' : 'GitHub'}
+                </Text>
+              )}
+            </Pressable>
+          </Animated.View>
+
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  scroll: {
+    padding: 20,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
+  },
+  card: {
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    width: '100%',
     shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowRadius: 8,
+    elevation: 4,
   },
   foto: {
     width: 150,
     height: 150,
     borderRadius: 75,
-    marginBottom: 20,
-    borderWidth: 3,
-    borderColor: '',
+    marginBottom: 16,
   },
   nombre: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    marginBottom: 4,
+    textAlign: 'center',
   },
   info: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666',
-    marginVertical: 5,
+    marginBottom: 12,
   },
   descripcion: {
     fontSize: 14,
+    color: '#444',
     textAlign: 'center',
-    color: '#888',
-    marginTop: 10,
-    marginBottom: 20, 
+    marginBottom: 20,
   },
-
+  mensajeLongPress: {
+    fontSize: 13,
+    color: '#e67e00',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontStyle: 'italic',
+  },
   boton: {
-    backgroundColor: '#6200ee',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: '#C13584',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
     borderRadius: 10,
-    marginHorizontal: 5,
+    marginBottom: 12,
+  },
+  botonPresionado: {
+    backgroundColor: '#8a1f5c',
+  },
+  botonGithub: {
+    backgroundColor: '#24292e',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  botonGithubPresionado: {
+    backgroundColor: '#57606a',
   },
   textoBoton: {
     color: '#fff',
